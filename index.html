@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MIELVIMAR Argentina | Venta de Miel</title>
+<style>
+  :root {
+    --primary: #f4c430;
+    --secondary: #d4a017;
+    --dark: #333;
+    --light: #f9f9f9;
+    --white: #fff;
+    --shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  * {
+    margin:0; padding:0; box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  body {
+    background: var(--light);
+    color: var(--dark);
+  }
+  a {
+    text-decoration:none;
+    color:inherit;
+    cursor: pointer;
+  }
+  header {
+    background-color: var(--white);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  nav {
+    max-width: 1200px;
+    margin: auto;
+    padding: 1rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    font-weight: 900;
+    font-size: 1.7rem;
+    color: var(--primary);
+    user-select:none;
+  }
+  .logo span {
+    color: var(--dark);
+    font-weight: 700;
+  }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    user-select:none;
+  }
+  .tab {
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #f0e84a70;
+    color: var(--dark);
+    border: 1.8px solid transparent;
+    transition: background-color 0.3s, border-color 0.3s;
+    user-select:none;
+  }
+  .tab:hover {
+    background-color: #f0e84a;
+  }
+  .tab.active {
+    background-color: var(--primary);
+    color: var(--dark);
+    border-color: var(--dark);
+    font-weight: 700;
+  }
+  .btn-contacto, .btn-pagos {
+    padding: 8px 15px;
+    border-radius: 5px;
+    background-color: var(--dark);
+    color: var(--white);
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.3s;
+    user-select:none;
+  }
+  .btn-contacto:hover, .btn-pagos:hover {
+    background-color: #222;
+  }
+  #product-section {
+    max-width: 1200px;
+    margin: 1rem auto 1rem auto;
+    padding: 0 1rem;
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    min-height: 300px;
+  }
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+  .product-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    padding: 15px;
+    box-shadow: 0 0 8px #ccc;
+    transition: box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+  }
+  .product-card:hover {
+    box-shadow: 0 0 16px #aaa;
+  }
+  .product-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    pointer-events: none;
+  }
+  .product-title {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 0.4rem;
+    text-align: center;
+  }
+  .product-price {
+    font-weight: 800;
+    color: var(--primary);
+    font-size: 1.4rem;
+    margin-bottom: 0.8rem;
+  }
+  .btn-add {
+    width: 100%;
+    padding: 9px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--dark);
+    color: white;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    user-select:none;
+    pointer-events: auto;
+  }
+  .btn-add:hover {
+    background-color: var(--primary);
+    color: var(--dark);
+  }
+  /* Modal detalle producto */
+  .modal-detalle {
+    display:none; 
+    position: fixed;
+    z-index: 10000;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  .modal-detalle-content {
+    background: var(--white);
+    max-width: 800px;
+    width: 100%;
+    border-radius: 10px;
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    color: var(--dark);
+    position: relative;
+    flex-wrap: wrap;
+  }
+  .modal-detalle-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--dark);
+    cursor: pointer;
+  }
+  .detalle-img {
+    flex: 1 1 300px;
+    max-width: 300px;
+    border-radius: 10px;
+    object-fit: cover;
+    max-height: 300px;
+    width: 100%;
+  }
+  .detalle-texto {
+    flex: 2 1 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 1.1rem;
+    line-height: 1.4;
+  }
+  .detalle-texto strong {
+    font-weight: 900;
+    margin-top: 10px;
+    color: var(--primary);
+  }
+  /* Modal carrito */
+  .modal {
+    display:none; 
+    position: fixed;
+    z-index: 9999;
+    padding-top: 100px;
+    left: 0; top: 0; width: 100%; height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+  }
+  .modal-content {
+    background-color: var(--white);
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+  }
+  .cart-header {
+    display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;
+  }
+  .close {
+    color: var(--dark);
+    cursor: pointer;
+    font-size: 26px;
+    font-weight: 700;
+  }
+  .payment-option {
+    padding: 12px;
+    border-radius: 6px;
+    background: #f7f7f7;
+    margin: 10px 0;
+    font-size: 1rem;
+    box-shadow: inset 1px 1px 3px #ddd;
+  }
+  .payment-option strong.abono {
+    display: block;
+    font-weight: 900;
+    margin-bottom: 15px;
+  }
+  .cart-icon {
+    position: relative;
+    cursor: pointer;
+    font-size: 1.2rem;
+    user-select:none;
+  }
+  .cart-count {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 50%;
+  }
+  .btn-checkout {
+    width: 100%;
+    background-color: #25D366;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 1rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 700;
+    user-select:none;
+    display:none;
+  }
+  /* Sección "Donde estamos" y "Envios" debajo de productos */
+  #footer-info {
+    max-width: 1200px;
+    margin: 0 auto 2rem auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    font-size: 1.1rem;
+    color: var(--dark);
+  }
+  #footer-info > div {
+    width: 48%;
+  }
+  #footer-info a {
+    color: var(--primary);
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <a href="#" onclick="location.reload();" class="logo">MIEL<span>VIMAR</span></a>
+        <div class="nav-right">
+            <div id="tab-minorista" class="tab active" onclick="showSection('minorista')">MINORISTA</div>
+            <div id="tab-mayorista" class="tab" onclick="showSection('mayorista')">MAYORISTA</div>
+            <button class="btn-contacto" onclick="window.open('https://wa.me/5491135852572','_blank')">📱 CONTACTO</button>
+            <button class="btn-pagos" id="btn-pagos" onclick="toggleModal('modal-pagos')">💳 MÉTODOS DE PAGO</button>
+            <div class="cart-icon" onclick="toggleCart()">🛒 Carrito <span id="cart-count" class="cart-count">0</span></div>
+        </div>
+    </nav>
+</header>
+
+<main>
+  <section id="product-section"></section>
+</main>
+
+<!-- Sección info contacto y envíos -->
+<section id="footer-info">
+  <div>
+    <h3>DONDE ESTAMOS</h3>
+    Parque Avellaneda, CABA<br>
+    <a href="https://maps.app.goo.gl/b5Dc7NtiwkmELMPP6" target="_blank" rel="noopener noreferrer">
+      Ver en Google Maps
+    </a>
+  </div>
+  <div>
+    <h3>ENVIOS 🛻</h3>
+    POR FLETE A TODO CABA Y PROVINCIA
+  </div>
+</section>
+
+<!-- Modal detalle producto -->
+<div id="modal-detalle" class="modal-detalle" onclick="closeDetalle(event)">
+  <div class="modal-detalle-content" onclick="event.stopPropagation()">
+    <span class="modal-detalle-close" onclick="closeDetalle(event)">×</span>
+    <img id="detalle-img" src="" alt="Imagen del producto" class="detalle-img" />
+    <div class="detalle-texto" id="detalle-texto"></div>
+  </div>
+</div>
+
+<div id="modal-pagos" class="modal" onclick="closeOnBackground(event,'modal-pagos')">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <span class="close" onclick="toggleModal('modal-pagos')">&times;</span>
+    <div class="payment-option strong abono">SE ABONA AL MOMENTO DE LA ENTREGA</div>
+    <div class="modal-header">Métodos de Pago</div>
+    <div class="payment-option">
+      <strong>MERCADO PAGO</strong> Alias: <em>tito.lc</em>
+    </div>
+    <div class="payment-option">
+      <strong>EFECTIVO</strong> Se paga al recibir.
+    </div>
+  </div>
+</div>
+
+<div id="modal-carrito" class="modal" onclick="closeOnBackground(event,'modal-carrito')">
+  <div class="cart-content modal-content" onclick="event.stopPropagation()">
+    <div class="cart-header">
+      <h3>Tu Carrito</h3>
+      <span class="close" onclick="toggleCart()">&times;</span>
+    </div>
+    <div id="cart-items">Tu carrito está vacío.</div>
+    <div class="cart-total" style="text-align:right; font-weight:bold; margin-top:10px;">
+      Total: <span id="cart-total-price">$ 0</span>
+    </div>
+    <button id="btn-pagar" class="btn-checkout" onclick="checkout()">PAGAR</button>
+  </div>
+</div>
+
+<!-- Redes sociales flotante abajo a la derecha -->
+<div id="redes-sociales" style="position: fixed; bottom: 20px; right: 20px; background: var(--white); padding: 12px 15px; box-shadow: var(--shadow); border-radius: 8px; font-size: 1rem; color: var(--dark); width: 220px; user-select:none;">
+  <h3 style="margin-bottom: 10px; font-weight: 800; text-align: center; color: var(--primary);">Redes</h3>
+  <div onclick="window.open('https://instagram.com/marcelobuonavolonta', '_blank')" style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--dark);margin-bottom:8px;">
+    <svg xmlns="http://www.w3.org/2000/svg" role="img" width="24" height="24" fill="#f4c430" viewBox="0 0 24 24"><title>Instagram</title><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.35 3.608 1.325.975.975 1.263 2.242 1.325 3.608.058 1.266.07 1.645.07 4.85 0 3.204-.012 3.584-.07 4.85-.062 1.366-.35 2.633-1.325 3.608-.975.975-2.242 1.263-3.608 1.325-1.266.058-1.645.07-4.85.07-3.204 0-3.584-.012-4.85-.07-1.366-.062-2.633-.35-3.608-1.325-.975-.975-1.263-2.242-1.325-3.608C2.175 15.584 2.163 15.204 2.163 12c0-3.204.012-3.584.07-4.85.062-1.366.35-2.633 1.325-3.608C4.533 2.505 5.8 2.217 7.166 2.156 8.432 2.098 8.812 2.163 12 2.163Zm0-2.163C8.74 0 8.332.012 7.052.07 5.775.127 4.6.36 3.6 1.36 2.6 2.36 2.367 3.535 2.309 4.812 2.25 6.092 2.238 6.5 2.238 10.76s.012 4.668.07 5.948c.058 1.278.291 2.453 1.291 3.453 1 1 2.175 1.233 3.452 1.291 1.28.059 1.688.07 5.947.07s4.668-.012 5.948-.07c1.277-.058 2.452-.291 3.452-1.291 1-1 1.233-2.175 1.291-3.453.059-1.28.07-1.688.07-5.947s-.012-4.668-.07-5.948c-.058-1.277-.291-2.452-1.291-3.452C19.403.36 18.228.127 16.95.07 15.67.012 15.26 0 12 0Z"/></svg>
+    <span>marcelobuonavolonta</span>
+  </div>
+  <div onclick="window.open('https://facebook.com/distribuidora.vi_mar', '_blank')" style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--dark);">
+    <svg xmlns="http://www.w3.org/2000/svg" role="img" width="24" height="24" fill="#f4c430" viewBox="0 0 24 24"><title>Facebook</title><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.898v-2.89h2.54v-2.203c0-2.507 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.772-1.63 1.562v1.876h2.773l-.443 2.89h-2.33v6.987C18.344 21.128 22 16.991 22 12z"/></svg>
+    <span>distribuidora.vi_mar</span>
+  </div>
+</div>
+
+<script>
+  const productos = {
+    mayorista: [
+      { id:'M10', nombre:'Miel 10kg', precio: 135000,
+        img:'https://images.unsplash.com/photo-1533777324565-a04df0e527b7?auto=format&fit=crop&w=800&q=80',
+        peso: '10kg' },
+      { id:'M20', nombre:'Miel 20kg', precio: 280000,
+        img:'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+        peso: '20kg' }
+    ],
+    minorista: [
+      { id:'m2', nombre:'Miel 500g', precio: 7500,
+        img:'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80',
+        peso: '500g' },
+      { id:'m3', nombre:'Miel 250g', precio: 3500,
+        img:'https://images.unsplash.com/photo-1514516871675-c528e1679719?auto=format&fit=crop&w=800&q=80',
+        peso: '250g' },
+      { id:'m1', nombre:'Miel 1kg', precio: 15000,
+        img:'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=800&q=80',
+        peso: '1kg' }
+    ]
+  };
+
+  let carrito = [];
+
+  function showSection(seccion) {
+    document.getElementById('tab-minorista').classList.toggle('active', seccion === 'minorista');
+    document.getElementById('tab-mayorista').classList.toggle('active', seccion === 'mayorista');
+    const container = document.getElementById('product-section');
+    container.innerHTML = '';
+    const grid = document.createElement('div');
+    grid.className = 'products-grid';
+    productos[seccion].forEach(p => {
+      const card = document.createElement('article');
+      card.className = 'product-card';
+      card.innerHTML = `
+        <img src="${p.img}" alt="${p.nombre}" class="product-img" loading="lazy" />
+        <div class="product-title">${p.nombre}</div>
+        <div class="product-price">$ ${p.precio.toLocaleString('es-AR')}</div>
+        <button class="btn-add" onclick="addToCart('${p.nombre}', ${p.precio}, '${p.img}', '${p.peso}')">Añadir al Carrito</button>
+        <button class="btn-add" style="margin-top:10px; background:#f4c430; color:#333;" onclick="openDetalle('${p.img}', '${p.peso}')">Ver Detalle</button>
+      `;
+      grid.appendChild(card);
+    });
+    container.appendChild(grid);
+  }
+
+  function openDetalle(img, peso) {
+    const modal = document.getElementById('modal-detalle');
+    document.getElementById('detalle-img').src = img;
+    document.getElementById('detalle-texto').innerHTML = `
+      Miel VIMAR la mejor del mercado (${peso}).<br>
+      Miel 100% traída de la colmena totalmente natural y la mejor que hay.<br>
+      Pedila ahora que se agota,<br>
+      <strong>EL MEJOR PRECIO DEL MERCADO</strong>
+    `;
+    modal.style.display = 'flex';
+  }
+
+  function closeDetalle(event) {
+    if (event.target.classList.contains('modal-detalle') || event.target.classList.contains('modal-detalle-close')) {
+      document.getElementById('modal-detalle').style.display = 'none';
+    }
+  }
+
+  function addToCart(nombre, precio, img, peso){
+    carrito.push({nombre, precio, img, peso});
+    updateCartUI();
+    alert(`"${nombre}" agregado al carrito.`);
+  }
+
+  function updateCartUI() {
+    const countDom = document.getElementById('cart-count');
+    countDom.textContent = carrito.length;
+    const itemsDom = document.getElementById('cart-items');
+    const pagarBtn = document.getElementById('btn-pagar');
+
+    if(carrito.length === 0){
+      itemsDom.innerHTML = "Tu carrito está vacío.";
+      pagarBtn.style.display = 'none';
+    } else {
+      itemsDom.innerHTML = '';
+      carrito.forEach(item => {
+        const div = document.createElement('div');
+        div.classList.add('cart-item');
+        div.style.marginBottom = '12px';
+        div.style.display = 'flex';
+        div.style.justifyContent = 'space-between';
+        div.style.alignItems = 'center';
+
+        const infoDiv = document.createElement('div');
+        infoDiv.style.display = 'flex';
+        infoDiv.style.alignItems = 'center';
+        infoDiv.style.gap = '10px';
+
+        const imgElem = document.createElement('img');
+        imgElem.src = item.img;
+        imgElem.alt = item.nombre;
+        imgElem.style.width = '50px';
+        imgElem.style.height = '50px';
+        imgElem.style.objectFit = 'cover';
+        imgElem.style.borderRadius = '5px';
+        imgElem.loading = 'lazy';
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = `${item.nombre} (${item.peso})`;
+
+        infoDiv.appendChild(imgElem);
+        infoDiv.appendChild(nameSpan);
+
+        const priceSpan = document.createElement('span');
+        priceSpan.textContent = '$ ' + item.precio.toLocaleString('es-AR');
+
+        div.appendChild(infoDiv);
+        div.appendChild(priceSpan);
+        itemsDom.appendChild(div);
+      })
+      pagarBtn.style.display = 'block';
+    }
+    const total = carrito.reduce((sum, p) => sum + p.precio, 0);
+    document.getElementById('cart-total-price').textContent = '$ ' + total.toLocaleString('es-AR');
+  }
+
+  function toggleCart(){
+    const modal = document.getElementById('modal-carrito');
+    modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+  }
+
+  function toggleModal(id) {
+    const m = document.getElementById(id);
+    m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
+  }
+
+  function closeOnBackground(event, idModal){
+    const modal = document.getElementById(idModal);
+    if(event.target === modal){
+      modal.style.display = 'none';
+    }
+  }
+
+  function checkout(){
+    if(carrito.length === 0){
+      alert("Tu carrito está vacío.");
+      return;
+    }
+    // Imagen única representando el carrito
+    const imagenCarrito = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80";
+
+    let mensaje = "Hola MIELVIMAR, quiero pedir:%0A";
+    carrito.forEach(p => {
+      mensaje += `- ${p.nombre} (${p.peso})%0A`;
+    });
+    mensaje += `Total: $ ${carrito.reduce((sum,p)=>sum+p.precio,0).toLocaleString('es-AR')}%0A`;
+    mensaje += encodeURIComponent(imagenCarrito);
+
+    window.open(`https://wa.me/5491135852572?text=${mensaje}`, '_blank');
+  }
+
+  showSection('minorista');
+</script>
+
+</body>
+</html>
